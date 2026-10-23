@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>
+window.onerror=function(m,u,l,c){try{var d=document.createElement("div");d.id="err";d.setAttribute("style","margin:10px;padding:10px 12px;border-radius:12px;background:#B3261E;color:#fff;font:13px/1.4 monospace;word-break:break-word");d.textContent="Error: "+m+" (line "+l+":"+c+")";(document.body||document.documentElement).insertBefore(d,(document.body||document.documentElement).firstChild)}catch(e){}};
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Note-Taking Memorama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Caveat:wght@600;700&family=Figtree:wght@400;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Caveat:wght@600;700&family=Figtree:wght@400;600;700&display=swap"></noscript>
+<style>
+/* Mobile-safe on purpose: no 3D transforms, no container units, no aspect-ratio. Flip is a 2D scaleX. */
+:root{
+  --bg1:#F3F0FF; --bg2:#FFF3E4; --surface:#FFFFFF; --ink:#1E1B4B; --muted:#5E5B85; --line:#DAD6F2;
+  --accent:#6D5BFF; --hl:#FFD93D; --hl-ink:#1E1B4B; --coral:#F0566A;
+  --back1:#3B2FBF; --back2:#1E1B4B; --dot:rgba(255,255,255,.16);
+  --cface:#FFFFFF; --cbar:#FFD93D; --cbar-ink:#1E1B4B;
+  --mface:#E8FAF4; --mbar:#2EC4A0; --mbar-ink:#06352B; --mtext:#0E3B30;
+  --shadow:0 2px 3px rgba(30,27,75,.14),0 8px 18px rgba(30,27,75,.10);
+  --p1:#5B49F0; --p2:#E0475B; --p3:#0F9D74; --p4:#C77700; --focus:#3B2FBF;
+  --fd:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --fb:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fh:"Caveat","Segoe Script","Bradley Hand",cursive;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg1:#12102B; --bg2:#1B1636; --surface:#201C42; --ink:#EEEBFF; --muted:#A9A5D6; --line:#38336B;
+    --accent:#9C8FFF; --hl-ink:#1E1B4B; --coral:#FF8696;
+    --back1:#5646E0; --back2:#2A2475; --dot:rgba(255,255,255,.18);
+    --cface:#2A2556; --cbar:#FFD93D; --mface:#10352E; --mbar:#35D0AB; --mtext:#D8FFF3;
+    --shadow:0 2px 3px rgba(0,0,0,.5),0 8px 18px rgba(0,0,0,.3);
+    --p1:#9C8FFF; --p2:#FF8696; --p3:#47CF9C; --p4:#F2B33D; --focus:#C9C2FF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#12102B; --bg2:#1B1636; --surface:#201C42; --ink:#EEEBFF; --muted:#A9A5D6; --line:#38336B;
+  --accent:#9C8FFF; --hl-ink:#1E1B4B; --coral:#FF8696;
+  --back1:#5646E0; --back2:#2A2475; --dot:rgba(255,255,255,.18);
+  --cface:#2A2556; --cbar:#FFD93D; --mface:#10352E; --mbar:#35D0AB; --mtext:#D8FFF3;
+  --shadow:0 2px 3px rgba(0,0,0,.5),0 8px 18px rgba(0,0,0,.3);
+  --p1:#9C8FFF; --p2:#FF8696; --p3:#47CF9C; --p4:#F2B33D; --focus:#C9C2FF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 var(--fb);color:var(--ink);background:var(--bg1);
+  background-image:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100%}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 48px;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--fd);font-weight:800;font-size:2.1rem;line-height:1.05;letter-spacing:-.02em;margin:0}
+h1 mark{background:var(--hl);color:var(--hl-ink);padding:0 .14em;border-radius:4px}
+.lead{margin:8px 0 0;color:var(--muted);font-size:.96rem}
+
+.panel{margin-top:16px;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:12px;box-shadow:var(--shadow)}
+.row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.row>*{margin:4px 8px 4px 0}
+.lbl{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--muted);min-width:42px;min-height:42px;cursor:pointer;touch-action:manipulation}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.btn{font:inherit;font-weight:700;border:0;background:var(--ink);color:var(--bg1);padding:0 18px;min-height:42px;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.btn:active{opacity:.85}
+.stats{display:flex}
+.stat{margin-right:18px}
+.stat b{display:block;font-family:var(--fd);font-size:1.3rem;line-height:1.1}
+
+.scores{display:flex;flex-wrap:wrap;margin:12px -4px 0}
+.player{display:flex;align-items:center;margin:4px;padding:6px 12px;border:2px solid var(--line);border-radius:999px;background:var(--surface);font-size:.92rem}
+.player.turn{border-color:var(--pc);box-shadow:0 0 0 3px var(--pcs)}
+.player .dot{width:11px;height:11px;border-radius:50%;background:var(--pc);margin-right:8px}
+.player .nm{font-weight:700;margin-right:8px}
+.player .tag{font-family:var(--fh);font-size:1.05rem;line-height:1;background:var(--hl);color:var(--hl-ink);padding:1px 8px;border-radius:4px;margin-left:8px}
+.status{margin:10px 2px 0;min-height:1.5em;font-weight:600;font-size:.95rem}
+
+.result{margin-top:12px;padding:16px;border-radius:18px;background:var(--hl);color:var(--hl-ink);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.result[hidden]{display:none}
+.result h2{font-family:var(--fd);font-size:1.25rem;line-height:1.2;margin:0}
+.result p{margin:2px 0 0;font-size:.92rem}
+.result .btn{margin-top:8px;background:var(--hl-ink);color:#fff}
+
+/* Board: always 4 x 4 */
+.board{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:8px;margin-top:14px}
+.card{position:relative;height:156px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;outline:none}
+.back,.face{position:absolute;left:0;top:0;right:0;bottom:0;border-radius:12px;overflow:hidden}
+.back{background-color:var(--back2);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.6px),linear-gradient(150deg,var(--back1),var(--back2));background-size:12px 12px,100% 100%;
+  box-shadow:var(--shadow);transform:scaleX(1);transition:transform .16s ease-in}
+.back .q{position:absolute;left:0;right:0;top:50%;margin-top:-22px;text-align:center;font-family:var(--fh);font-weight:700;font-size:2.4rem;line-height:44px;color:var(--hl)}
+.back::after{content:"";position:absolute;left:22%;right:22%;bottom:18%;height:7px;background:var(--hl);border-radius:3px;opacity:.9;transform:rotate(-3deg)}
+.face{display:flex;flex-direction:column;box-shadow:var(--shadow);transform:scaleX(0);transition:transform .16s ease-out .16s;border:2px solid transparent}
+.concept{background:var(--cface);border-color:var(--hl)}
+.meaning{background:var(--mface);border-color:var(--mbar)}
+.bar{font-family:var(--fh);font-weight:700;font-size:.95rem;line-height:1;padding:3px 7px 2px;letter-spacing:.02em}
+.concept .bar{background:var(--cbar);color:var(--cbar-ink)}
+.meaning .bar{background:var(--mbar);color:var(--mbar-ink)}
+.txt{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:3px 5px 6px;overflow-wrap:break-word;word-wrap:break-word;-webkit-hyphens:auto;hyphens:auto}
+.concept .txt{font-family:var(--fd);font-weight:800;font-size:.72rem;line-height:1.18}
+.meaning .txt{font-size:.62rem;line-height:1.2;font-weight:600;color:var(--mtext);padding:2px 3px 5px}
+.card.up .back{transform:scaleX(0)}
+.card.up .face{transform:scaleX(1)}
+.card.done .face{border-color:var(--owner);box-shadow:0 0 0 2px var(--owner),var(--shadow)}
+.card.done .face::after{content:"\2713";position:absolute;right:0;top:0;width:20px;height:20px;line-height:20px;text-align:center;font-size:.8rem;font-weight:700;background:var(--owner);color:#fff;border-radius:0 0 0 9px}
+.card.shake .face{animation:nope .35s ease}
+@keyframes nope{0%,100%{margin-left:0}25%{margin-left:-4px}75%{margin-left:4px}}
+.card:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:12px}
+
+@media (min-width:480px){
+  .board{grid-gap:10px}
+  .card{height:150px}
+  .concept .txt{font-size:.9rem}
+  .meaning .txt{font-size:.74rem}
+}
+@media (min-width:700px){
+  h1{font-size:3rem}
+  .board{grid-gap:14px}
+  .card{height:190px}
+  .bar{font-size:1.15rem;padding:4px 10px 3px}
+  .concept .txt{font-size:1.2rem}
+  .meaning .txt{font-size:1rem;padding:6px 10px 10px}
+}
+
+.info{margin-top:22px;display:grid;grid-template-columns:1fr;grid-gap:18px}
+@media (min-width:700px){.info{grid-template-columns:1fr 1fr}}
+.info h2{font-family:var(--fd);font-size:1.15rem;margin:0 0 8px}
+.info ol{margin:0;padding-left:1.3em}
+.info li{margin:3px 0}
+.info li::marker{color:var(--coral);font-weight:700}
+.note{color:var(--muted);font-size:.9rem;margin:10px 0 0}
+summary{cursor:pointer;font-weight:700;min-height:36px}
+.tw{overflow-x:auto;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td:first-child{font-weight:700;white-space:nowrap}
+tr.in td:first-child::before{content:"\25CF ";color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.back,.face{transition:none}.card.shake .face{animation:none}}
+
+/* ===== Notebook look ===== */
+:root{
+  --paper:#FFFCF2; --rule:rgba(88,120,200,.15); --margin:rgba(240,86,106,.55);
+  --cface:#FFF3A6; --mface:#FBFEFF; --idxrule:rgba(60,130,200,.16); --tape:rgba(255,217,61,.70);
+  --cbar-bg:rgba(30,27,75,.10); --cedge:#E8C32E; --fold:rgba(0,0,0,.13);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+  --paper:#16132E; --rule:rgba(160,150,255,.09); --margin:rgba(255,134,150,.45);
+  --cface:#4B4112; --mface:#10352E; --idxrule:rgba(255,255,255,.07); --tape:rgba(255,217,61,.38);
+  --cbar-bg:rgba(255,255,255,.12); --cedge:#B89A1C; --fold:rgba(0,0,0,.35);
+  --seg-ink:#1E1B4B;
+  }
+  :root:not([data-theme="light"]) .btn{color:#1E1B4B}
+  :root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#1E1B4B}
+}
+:root[data-theme="dark"]{
+  --paper:#16132E; --rule:rgba(160,150,255,.09); --margin:rgba(255,134,150,.45);
+  --cface:#4B4112; --mface:#10352E; --idxrule:rgba(255,255,255,.07); --tape:rgba(255,217,61,.38);
+  --cbar-bg:rgba(255,255,255,.12); --cedge:#B89A1C; --fold:rgba(0,0,0,.35);
+  --seg-ink:#1E1B4B;
+}
+:root[data-theme="dark"] .btn{color:#1E1B4B}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#1E1B4B}
+
+html{background:var(--paper)}
+body{position:relative;min-height:100vh;min-height:100dvh;background-color:var(--paper);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px)}
+body::before{content:"";position:absolute;top:0;bottom:0;left:12px;width:2px;background:var(--margin);pointer-events:none}
+@media (min-width:820px){body::before{left:calc(50% - 404px)}}
+.wrap{position:relative;z-index:1;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+
+h1 mark{display:inline-block;background:linear-gradient(transparent 14%,var(--hl) 14%,var(--hl) 90%,transparent 90%);padding:0 .2em;border-radius:3px;transform:rotate(-1.2deg)}
+
+.panel{position:relative;margin-top:26px}
+.panel::before{content:"";position:absolute;top:-11px;left:50%;width:84px;height:21px;margin-left:-42px;background:var(--tape);border-radius:2px;transform:rotate(-2deg)}
+.btn{background:var(--accent);color:#fff;box-shadow:0 3px 0 rgba(30,27,75,.35);transition:transform .08s ease,box-shadow .08s ease}
+.btn:active{opacity:1;transform:translateY(2px);box-shadow:0 1px 0 rgba(30,27,75,.35)}
+.result .btn{box-shadow:0 3px 0 rgba(0,0,0,.3)}
+
+.progress{height:10px;border-radius:999px;background:var(--line);margin-top:10px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--coral),var(--hl));transition:width .45s ease}
+
+.result{box-shadow:var(--shadow)}
+.result:not([hidden]){animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+
+.card{transform:rotate(var(--r,0deg));transition:transform .12s ease}
+.card:nth-child(4n+1){--r:-1.4deg}
+.card:nth-child(4n+2){--r:.9deg}
+.card:nth-child(4n+3){--r:-.6deg}
+.card:nth-child(4n){--r:1.3deg}
+.card:active{transform:rotate(var(--r,0deg)) scale(.96)}
+.face{transition:transform .16s ease-out .16s,box-shadow .3s ease}
+
+
+.concept{border-color:var(--cedge)}
+.concept .bar{background:var(--cbar-bg);color:var(--ink)}
+.concept::before{content:"";position:absolute;right:0;bottom:0;width:16px;height:16px;background:linear-gradient(135deg,transparent 50%,var(--fold) 50%)}
+.meaning{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 15px,var(--idxrule) 15px,var(--idxrule) 16px)}
+.card.done .txt{opacity:.82}
+
+.card.pop{animation:pop .55s ease;z-index:2}
+.card.pop .face{box-shadow:0 0 0 3px var(--owner),0 0 18px var(--owner)}
+@keyframes pop{
+  0%{transform:rotate(var(--r,0deg)) scale(1)}
+  35%{transform:rotate(calc(var(--r,0deg) * -1)) scale(1.14)}
+  70%{transform:rotate(var(--r,0deg)) scale(.97)}
+  100%{transform:rotate(var(--r,0deg)) scale(1)}
+}
+
+.info>div{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+
+.confetti{position:fixed;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;z-index:60}
+.confetti i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;opacity:0;animation:fall var(--d,2.8s) linear var(--w,0s) forwards}
+@keyframes fall{
+  0%{opacity:1;transform:translate3d(0,-20px,0) rotate(0deg)}
+  100%{opacity:1;transform:translate3d(var(--x,0px),105vh,0) rotate(var(--rot,540deg))}
+}
+
+/* Long words + check mark overlap */
+.txt{overflow-wrap:anywhere}
+.concept .txt{padding-left:2px;padding-right:2px}
+.concept .txt.md{font-size:.62rem}
+.concept .txt.lg{font-size:.56rem}
+.concept .txt.xl{font-size:.52rem}
+.card.done .face::after{display:none}
+.meaning .txt{padding-left:5px;padding-right:5px}
+@media (min-width:480px){.concept .txt.md{font-size:.9rem}.concept .txt.lg{font-size:.8rem}.concept .txt.xl{font-size:.7rem}}
+@media (min-width:700px){.concept .txt.md,.concept .txt.lg,.concept .txt.xl{font-size:1.2rem}.card.done .face::after{display:block;top:34px;width:20px;height:20px;line-height:20px;font-size:.8rem}}
+@media (prefers-reduced-motion:reduce){
+  .card,.btn,.progress i{transition:none}
+  .card.pop,.result:not([hidden]){animation:none}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <header>
+    <h1>Taking <mark>notes</mark> while reading</h1>
+    <p class="lead">Flip two cards and match each concept with its meaning. Every game uses 8 pairs from a deck of 16, so each round is different.</p>
+  </header>
+
+  <section class="panel" aria-label="Game controls">
+    <div class="row">
+      <div class="row">
+        <span class="lbl" id="lblS">Students</span>
+        <div class="seg" role="group" aria-labelledby="lblS" id="seg"></div>
+        <button class="btn" id="new" type="button">New game</button>
+      </div>
+      <div class="stats" aria-label="Progress">
+        <div class="stat"><span class="lbl">Pairs</span><b id="found">0 / 8</b></div>
+        <div class="stat"><span class="lbl">Tries</span><b id="tries">0</b></div>
+      </div>
+    </div>
+    <div class="scores" id="scores" aria-label="Scores"></div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  </section>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <div><h2 id="rt"></h2><p id="rs"></p></div>
+    <button class="btn" id="again" type="button">Next round</button>
+  </section>
+<section class="board" id="board" aria-label="Memory cards"></section>
+
+  <section class="info">
+    <div>
+      <h2>How to play</h2>
+      <ol>
+        <li>All cards start face down.</li>
+        <li>On your turn, flip two cards.</li>
+        <li>If they are a concept and its meaning, you keep the pair and play again.</li>
+        <li>If they do not match, they turn face down again and the next player goes.</li>
+        <li>When all pairs are found, the player with the most pairs wins.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Teacher’s key</h2>
+      <details>
+        <summary>Show the 16 pairs in the deck</summary>
+        <div class="tw"><table><thead><tr><th>Concept</th><th>Meaning</th></tr></thead><tbody id="key"></tbody></table></div>
+        <p class="note">● = used in this round.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<script>
+document.documentElement.setAttribute("data-js","1");
+(function () {
+  // The deck: 16 pairs. Each game draws 8 of them, cycling so pairs keep rotating.
+  var DECK = [
+    { t: "Active Reading", d: "Reading with focus and interaction to better understand, analyze, and remember information." },
+    { t: "Note-Taking", d: "Writing important ideas and details while reading to improve learning and recall." },
+    { t: "Marginal Notes", d: "Brief notes written beside the text to summarize or comment on key points." },
+    { t: "Main Idea", d: "The central message or most important point that the author wants to communicate." },
+    { t: "Key Details", d: "Important pieces of information that explain, support, or clarify the main idea." },
+    { t: "Summary", d: "A short version of a text that includes only the most important information." },
+    { t: "Questioning", d: "Creating questions about the text to increase understanding and critical thinking." },
+    { t: "Comprehension", d: "The ability to understand, interpret, and make sense of what is being read." },
+    { t: "Annotation", d: "Adding notes, symbols, or comments to a text to highlight important information." },
+    { t: "Organization", d: "Arranging ideas and notes in a clear and logical way for easier study." },
+    { t: "Review", d: "Looking over notes again to reinforce understanding and improve memory." },
+    { t: "Retention", d: "The ability to remember information after reading and studying." },
+    { t: "Critical Thinking", d: "Carefully analyzing ideas and evaluating information presented in the text." },
+    { t: "Learning Support", d: "Using notes and reading strategies to make learning more effective." },
+    { t: "Keywords", d: "Important words that help identify the main topics and ideas of a text." },
+    { t: "Paraphrasing", d: "Restating information in your own words while keeping its original meaning." }
+  ];
+  var PER = 8, FLIP_BACK = 1500, STORE = "nt-memorama-bag";
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $("app"), board = $("board"), seg = $("seg"), scoresEl = $("scores"), statusEl = $("status"), resultEl = $("result");
+  var players = 2, state = null, bag = [], round = 0;
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function pname(i) { return players === 1 ? "You" : "Student " + (i + 1); }
+
+  function loadBag() {
+    try { var v = JSON.parse(localStorage.getItem(STORE) || "[]"); if (Object.prototype.toString.call(v) === "[object Array]") bag = v.filter(function (n) { return typeof n === "number" && n >= 0 && n < DECK.length; }); } catch (e) { bag = []; }
+  }
+  function saveBag() { try { localStorage.setItem(STORE, JSON.stringify(bag)); } catch (e) {} }
+  // Take the next 8 pairs; refill the bag with the rest of the deck when it runs low.
+  function drawPairs() {
+    if (bag.length < PER) {
+      var rest = [];
+      for (var i = 0; i < DECK.length; i++) if (bag.indexOf(i) === -1) rest.push(i);
+      bag = bag.concat(shuffle(rest));
+    }
+    var pick = bag.splice(0, PER);
+    saveBag();
+    return pick;
+  }
+
+  function buildSeg() {
+    seg.innerHTML = "";
+    for (var n = 1; n <= 4; n++) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = n; b.dataset.n = n;
+      b.setAttribute("aria-pressed", n === players ? "true" : "false");
+      b.setAttribute("aria-label", n + (n === 1 ? " student" : " students"));
+      seg.appendChild(b);
+    }
+  }
+  function buildKey() {
+    $("key").innerHTML = DECK.map(function (p, i) {
+      return '<tr' + (state && state.pick.indexOf(i) !== -1 ? ' class="in"' : "") + "><td>" + esc(p.t) + "</td><td>" + esc(p.d) + "</td></tr>";
+    }).join("");
+  }
+  function setStatus(m) { statusEl.textContent = m; }
+  function turnMsg() { return players === 1 ? "Flip two cards." : pname(state.cur) + ": flip two cards."; }
+
+  function renderScores() {
+    scoresEl.innerHTML = "";
+    for (var i = 0; i < players; i++) {
+      var d = document.createElement("div"), on = players > 1 && i === state.cur;
+      d.className = "player" + (on ? " turn" : "");
+      d.style.setProperty("--pc", "var(--p" + (i + 1) + ")");
+      d.style.setProperty("--pcs", "rgba(127,127,200,.22)");
+      d.innerHTML = '<span class="dot"></span><span class="nm">' + esc(pname(i)) + "</span><span><b>" + state.scores[i] + "</b> " + (state.scores[i] === 1 ? "pair" : "pairs") + "</span>" + (on ? '<span class="tag">your turn</span>' : "");
+      scoresEl.appendChild(d);
+    }
+    var f = state.scores.reduce(function (a, b) { return a + b; }, 0);
+    $("found").textContent = f + " / " + PER;
+    $("tries").textContent = state.tries;
+    var bar = $("bar"); if (bar) bar.style.width = Math.round(f / PER * 100) + "%";
+  }
+
+  function paint(i) {
+    var el = board.children[i], c = state.cards[i], owner = state.owner[i];
+    var done = owner !== undefined, up = done || state.up.indexOf(i) !== -1;
+    if (up) el.classList.add("up"); else el.classList.remove("up");
+    if (done) { el.classList.add("done"); el.style.setProperty("--owner", "var(--p" + (owner + 1) + ")"); }
+    el.setAttribute("aria-label", up ? (c.kind === "c" ? "Concept: " : "Meaning: ") + c.text + (done ? ", matched" : "") : "Card " + (i + 1) + ", face down");
+  }
+
+  function lenClass(t) {
+    var m = 0; t.split(/\s+/).forEach(function (w) { if (w.length > m) m = w.length; });
+    return m >= 13 ? " xl" : (m >= 11 ? " lg" : (m >= 10 ? " md" : ""));
+  }
+  function renderBoard() {
+    board.innerHTML = "";
+    state.cards.forEach(function (c, i) {
+      var el = document.createElement("div");
+      el.className = "card"; el.setAttribute("role", "button"); el.tabIndex = 0; el.dataset.i = i;
+      var isC = c.kind === "c";
+      el.innerHTML = '<div class="back" aria-hidden="true"><span class="q">?</span></div>' +
+        '<div class="face ' + (isC ? "concept" : "meaning") + '" aria-hidden="true"><div class="bar">' + (isC ? "concept" : "meaning") + '</div><div class="txt' + (isC ? lenClass(c.text) : "") + '">' + esc(c.text) + "</div></div>";
+      board.appendChild(el);
+      paint(i);
+    });
+  }
+
+  function popCards(a, b) {
+    [a, b].forEach(function (i) {
+      var el = board.children[i]; if (!el) return;
+      el.classList.add("pop");
+      setTimeout(function () { el.classList.remove("pop"); }, 650);
+    });
+  }
+  function confetti() {
+    try {
+      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var w = document.createElement("div"); w.className = "confetti"; w.setAttribute("aria-hidden", "true");
+      var cols = ["#FFD93D", "#F0566A", "#6D5BFF", "#2EC4A0", "#FF9F43"];
+      for (var i = 0; i < 46; i++) {
+        var p = document.createElement("i");
+        p.style.left = (Math.random() * 100) + "%";
+        p.style.background = cols[i % cols.length];
+        p.style.setProperty("--d", (2.2 + Math.random() * 1.6) + "s");
+        p.style.setProperty("--w", (Math.random() * 0.7) + "s");
+        p.style.setProperty("--x", Math.round(Math.random() * 160 - 80) + "px");
+        p.style.setProperty("--rot", (360 + Math.round(Math.random() * 540)) + "deg");
+        w.appendChild(p);
+      }
+      document.body.appendChild(w);
+      setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 4800);
+    } catch (e) {}
+  }
+
+  function newGame() {
+    var pick = drawPairs(), cards = [];
+    round++;
+    pick.forEach(function (k) {
+      cards.push({ pair: k, kind: "c", text: DECK[k].t });
+      cards.push({ pair: k, kind: "m", text: DECK[k].d });
+    });
+    state = { pick: pick, cards: shuffle(cards), up: [], owner: {}, lock: false, cur: 0, scores: [], tries: 0 };
+    for (var i = 0; i < players; i++) state.scores.push(0);
+    resultEl.hidden = true;
+    renderBoard(); renderScores(); buildKey();
+    setStatus("Round " + round + ". " + turnMsg());
+  }
+
+  function finish() {
+    var max = Math.max.apply(null, state.scores), w = [];
+    state.scores.forEach(function (s, i) { if (s === max) w.push(i); });
+    if (players === 1) { $("rt").textContent = "All " + PER + " pairs found"; }
+    else if (w.length === 1) { $("rt").textContent = pname(w[0]) + " wins with " + max + " pairs"; }
+    else { $("rt").textContent = "Tie: " + w.map(pname).join(" and ") + ", " + max + " pairs each"; }
+    $("rs").textContent = "Finished in " + state.tries + " tries. The next round brings new pairs.";
+    resultEl.hidden = false;
+    confetti();
+    setStatus("Round finished.");
+    try { resultEl.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (e) {}
+  }
+
+  function resolve() {
+    var s = state, a = s.up[0], b = s.up[1];
+    s.tries++;
+    if (s.cards[a].pair === s.cards[b].pair) {
+      s.owner[a] = s.cur; s.owner[b] = s.cur; s.scores[s.cur]++; s.up = [];
+      paint(a); paint(b); renderScores(); popCards(a, b);
+      var f = s.scores.reduce(function (x, y) { return x + y; }, 0);
+      if (f === PER) { setTimeout(function () { if (state === s) finish(); }, 500); return; }
+      setStatus("Pair found: " + DECK[s.cards[a].pair].t + "." + (players > 1 ? " " + pname(s.cur) + " goes again." : ""));
+    } else {
+      s.lock = true; renderScores();
+      setTimeout(function () {
+        if (state !== s) return;
+        [a, b].forEach(function (i) { var el = board.children[i]; if (el) { el.classList.add("shake"); setTimeout(function () { el.classList.remove("shake"); }, 400); } });
+      }, 350);
+      setStatus("Not a pair. Turning them back.");
+      setTimeout(function () {
+        if (state !== s) return;
+        s.up = []; s.lock = false; paint(a); paint(b);
+        if (players > 1) s.cur = (s.cur + 1) % players;
+        renderScores(); setStatus(turnMsg());
+      }, FLIP_BACK);
+    }
+  }
+
+  function flip(el) {
+    if (!el || !state) return;
+    var i = Number(el.dataset.i);
+    if (state.lock || state.owner[i] !== undefined || state.up.indexOf(i) !== -1) return;
+    state.up.push(i); paint(i);
+    if (state.up.length === 2) resolve();
+  }
+  function cardOf(t) { while (t && t !== board) { if (t.classList && t.classList.contains("card")) return t; t = t.parentNode; } return null; }
+
+  board.addEventListener("click", function (e) { flip(cardOf(e.target)); });
+  board.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(cardOf(e.target)); }
+  });
+  seg.addEventListener("click", function (e) {
+    var b = e.target; while (b && b.tagName !== "BUTTON") b = b.parentNode;
+    if (!b || !b.dataset.n) return;
+    players = Number(b.dataset.n); buildSeg(); newGame();
+  });
+  $("new").addEventListener("click", newGame);
+  $("again").addEventListener("click", newGame);
+
+  loadBag(); buildSeg(); newGame();
+})();
+</script>
+</body>
+</html>
